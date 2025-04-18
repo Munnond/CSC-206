@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Financial Report</title>
+</head>
+<body>
+    <h2>Get Company Financial Report</h2>
+    <form method="POST">
+        <label for="ticker">Ticker Symbol:</label>
+        <input type="text" id="ticker" name="ticker" value="MSFT" required><br><br>
+
+        <label for="exchange">Exchange (NSE or US):</label>
+        <input type="text" id="exchange" name="exchange" value="US" required><br><br>
+
+        <label for="question">Your Question:</label><br>
+        <textarea id="question" name="question" rows="4" cols="50">Give me a financial report</textarea><br><br>
+
+        <button type="submit">Analyze</button>
+    </form>
+
+    {% if result %}
+        <h3>Result:</h3>
+        <pre>{{ result }}</pre>
+    {% endif %}
+</body>
+</html>

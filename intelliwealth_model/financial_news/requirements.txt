@@ -1,0 +1,5 @@
+flask
+newspaper3k
+nltk
+beautifulsoup4
+Pillow

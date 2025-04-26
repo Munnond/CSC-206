@@ -1,0 +1,709 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Grid,
+  Button,
+  Divider,
+  TextField,
+  Card,
+  Container,
+  List,
+  ListItem,
+  ListItemText,
+  Tabs,
+  Tab,
+  InputAdornment,
+  Chip,
+  CircularProgress,
+  CardMedia,
+  CardContent,
+  CardActionArea,
+  CardActions,
+  Link,
+  Alert
+} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import LaunchIcon from '@mui/icons-material/Launch';
+import { useTheme } from '@mui/material/styles';
+import BackendClient from '../BackendClient';
+
+const stockList = [
+    { symbol: "A", name: "Agilent Technologies", category: "Stocks" }, 
+    { symbol: "AAP", name: "Advance Auto Parts", category: "Stocks" },
+    { symbol: "AAPL", name: "Apple Inc.", category: "Stocks" },
+    { symbol: "ABT", name: "Abbott Laboratories", category: "Stocks" },
+    { symbol: "ACN", name: "Accenture", category: "Stocks" },
+    { symbol: "ADBE", name: "Adobe Inc.", category: "Stocks" },
+    { symbol: "ADI", name: "Analog Devices", category: "Stocks" },
+    { symbol: "ADM", name: "Archer-Daniels-Midland", category: "Stocks" },
+    { symbol: "ADP", name: "Automatic Data Processing", category: "Stocks" },
+    { symbol: "ADSK", name: "Autodesk", category: "Stocks" },
+    { symbol: "AEE", name: "Ameren", category: "Stocks" },
+    { symbol: "AEP", name: "American Electric Power", category: "Stocks" },
+    { symbol: "AES", name: "AES Corporation", category: "Stocks" },
+    { symbol: "AFL", name: "Aflac", category: "Stocks" },
+    { symbol: "AIG", name: "American International Group", category: "Stocks" },
+    { symbol: "AIV", name: "Apartment Investment and Management", category: "Stocks" },
+    { symbol: "AIZ", name: "Assurant", category: "Stocks" },
+    { symbol: "AJG", name: "Arthur J. Gallagher & Co.", category: "Stocks" },
+    { symbol: "AKAM", name: "Akamai Technologies", category: "Stocks" },
+    { symbol: "ALB", name: "Albemarle Corporation", category: "Stocks" },
+    { symbol: "ALGN", name: "Align Technology", category: "Stocks" },
+    { symbol: "ALK", name: "Alaska Air Group", category: "Stocks" },
+    { symbol: "ALL", name: "Allstate", category: "Stocks" },
+    { symbol: "AMAT", name: "Applied Materials", category: "Stocks" },
+    { symbol: "AMD", name: "Advanced Micro Devices", category: "Stocks" },
+    { symbol: "AME", name: "AMETEK", category: "Stocks" },
+    { symbol: "AMGN", name: "Amgen", category: "Stocks" },
+    { symbol: "AMT", name: "American Tower", category: "Stocks" },
+    { symbol: "AMZN", name: "Amazon", category: "Stocks" },
+    { symbol: "ANSS", name: "ANSYS", category: "Stocks" },
+    { symbol: "AON", name: "Aon plc", category: "Stocks" },
+    { symbol: "AOS", name: "A. O. Smith", category: "Stocks" },
+    { symbol: "APA", name: "APA Corporation", category: "Stocks" },
+    { symbol: "APD", name: "Air Products and Chemicals", category: "Stocks" },
+    { symbol: "APH", name: "Amphenol", category: "Stocks" },
+    { symbol: "ARE", name: "Alexandria Real Estate Equities", category: "Stocks" },
+    { symbol: "ATO", name: "Atmos Energy", category: "Stocks" },
+    { symbol: "AVB", name: "AvalonBay Communities", category: "Stocks" },
+    { symbol: "AVY", name: "Avery Dennison", category: "Stocks" },
+    { symbol: "AXP", name: "American Express", category: "Stocks" },
+    { symbol: "AZO", name: "AutoZone", category: "Stocks" },
+    { symbol: "BA", name: "Boeing", category: "Stocks" },
+    { symbol: "BAC", name: "Bank of America", category: "Stocks" },
+    { symbol: "BAX", name: "Baxter International", category: "Stocks" },
+    { symbol: "BBY", name: "Best Buy", category: "Stocks" },
+    { symbol: "BDX", name: "Becton Dickinson", category: "Stocks" },
+    { symbol: "BEN", name: "Franklin Resources", category: "Stocks" },
+    { symbol: "BIIB", name: "Biogen", category: "Stocks" },
+    { symbol: "BIO", name: "Bio-Rad", category: "Stocks" },
+    { symbol: "BK", name: "Bank of New York Mellon", category: "Stocks" },
+    { symbol: "BKNG", name: "Booking Holdings", category: "Stocks" },
+    { symbol: "BKR", name: "Baker Hughes", category: "Stocks" },
+    { symbol: "BLK", name: "BlackRock", category: "Stocks" },
+    { symbol: "BMY", name: "Bristol-Myers Squibb", category: "Stocks" },
+    { symbol: "BSX", name: "Boston Scientific", category: "Stocks" },
+    { symbol: "BWA", name: "BorgWarner", category: "Stocks" },
+    { symbol: "BXP", name: "Boston Properties", category: "Stocks" },
+    { symbol: "C", name: "Citigroup", category: "Stocks" },
+    { symbol: "CAG", name: "Conagra Brands", category: "Stocks" },
+    { symbol: "CAH", name: "Cardinal Health", category: "Stocks" },
+    { symbol: "CAT", name: "Caterpillar", category: "Stocks" },
+    { symbol: "CB", name: "Chubb", category: "Stocks" },
+    { symbol: "CBRE", name: "CBRE Group", category: "Stocks" },
+    { symbol: "CCI", name: "Crown Castle", category: "Stocks" },
+    { symbol: "CCL", name: "Carnival", category: "Stocks" },
+    { symbol: "CDNS", name: "Cadence Design Systems", category: "Stocks" },
+    { symbol: "CE", name: "Celanese", category: "Stocks" },
+    { symbol: "CHD", name: "Church & Dwight", category: "Stocks" },
+    { symbol: "CHRW", name: "C.H. Robinson", category: "Stocks" },
+    { symbol: "CI", name: "Cigna", category: "Stocks" },
+    { symbol: "CINF", name: "Cincinnati Financial", category: "Stocks" },
+    { symbol: "CL", name: "Colgate-Palmolive", category: "Stocks" },
+    { symbol: "CLX", name: "Clorox", category: "Stocks" },
+    { symbol: "CMA", name: "Comerica", category: "Stocks" },
+    { symbol: "CMCSA", name: "Comcast", category: "Stocks" },
+    { symbol: "CME", name: "CME Group", category: "Stocks" },
+    { symbol: "CMI", name: "Cummins", category: "Stocks" },
+    { symbol: "CMS", name: "CMS Energy", category: "Stocks" },
+    { symbol: "CNC", name: "Centene", category: "Stocks" },
+    { symbol: "CNP", name: "CenterPoint Energy", category: "Stocks" },
+    { symbol: "COF", name: "Capital One", category: "Stocks" },
+    { symbol: "COO", name: "CooperCompanies", category: "Stocks" },
+    { symbol: "COP", name: "ConocoPhillips", category: "Stocks" },
+    { symbol: "COST", name: "Costco", category: "Stocks" },
+    { symbol: "CPB", name: "Campbell Soup", category: "Stocks" },
+    { symbol: "CPRT", name: "Copart", category: "Stocks" },
+    { symbol: "CRM", name: "Salesforce", category: "Stocks" },
+    { symbol: "CSCO", name: "Cisco", category: "Stocks" },
+    { symbol: "CSX", name: "CSX Corporation", category: "Stocks" },
+    { symbol: "CTAS", name: "Cintas", category: "Stocks" },
+    { symbol: "CTSH", name: "Cognizant", category: "Stocks" },
+    { symbol: "CVS", name: "CVS Health", category: "Stocks" },
+    { symbol: "CVX", name: "Chevron", category: "Stocks" },
+    { symbol: "D", name: "Dominion Energy", category: "Stocks" },
+    { symbol: "DD", name: "DuPont", category: "Stocks" },
+    { symbol: "DE", name: "Deere & Company", category: "Stocks" },
+    { symbol: "DGX", name: "Quest Diagnostics", category: "Stocks" },
+    { symbol: "DHI", name: "D.R. Horton", category: "Stocks" },
+    { symbol: "DHR", name: "Danaher", category: "Stocks" },
+    { symbol: "DIS", name: "Disney", category: "Stocks" },
+    { symbol: "DLR", name: "Digital Realty", category: "Stocks" },
+    { symbol: "DLTR", name: "Dollar Tree", category: "Stocks" },
+    { symbol: "DOV", name: "Dover Corporation", category: "Stocks" },
+    { symbol: "DPZ", name: "Domino's Pizza", category: "Stocks" },
+    { symbol: "DRI", name: "Darden Restaurants", category: "Stocks" },
+    { symbol: "DTE", name: "DTE Energy", category: "Stocks" },
+    { symbol: "DUK", name: "Duke Energy", category: "Stocks" },
+    { symbol: "DVA", name: "DaVita", category: "Stocks" },
+    { symbol: "DVN", name: "Devon Energy", category: "Stocks" },
+    { symbol: "DXC", name: "DXC Technology", category: "Stocks" },
+    { symbol: "DXCM", name: "Dexcom", category: "Stocks" },
+    { symbol: "EA", name: "Electronic Arts", category: "Stocks" },
+    { symbol: "EBAY", name: "eBay", category: "Stocks" },
+    { symbol: "ECL", name: "Ecolab", category: "Stocks" },
+    { symbol: "ED", name: "Consolidated Edison", category: "Stocks" },
+    { symbol: "EFX", name: "Equifax", category: "Stocks" },
+    { symbol: "EIX", name: "Edison International", category: "Stocks" },
+    { symbol: "EL", name: "Estée Lauder", category: "Stocks" },
+    { symbol: "EMN", name: "Eastman Chemical", category: "Stocks" },
+    { symbol: "EMR", name: "Emerson Electric", category: "Stocks" },
+    { symbol: "EOG", name: "EOG Resources", category: "Stocks" },
+    { symbol: "EQIX", name: "Equinix", category: "Stocks" },
+    { symbol: "EQR", name: "Equity Residential", category: "Stocks" },
+    { symbol: "ES", name: "Eversource Energy", category: "Stocks" },
+    { symbol: "ESS", name: "Essex Property Trust", category: "Stocks" },
+    { symbol: "ETN", name: "Eaton", category: "Stocks" },
+    { symbol: "ETR", name: "Entergy", category: "Stocks" },
+    { symbol: "EVRG", name: "Evergy", category: "Stocks" },
+    { symbol: "EW", name: "Edwards Lifesciences", category: "Stocks" },
+    { symbol: "EXC", name: "Exelon", category: "Stocks" },
+    { symbol: "EXPD", name: "Expeditors International", category: "Stocks" },
+    { symbol: "EXPE", name: "Expedia Group", category: "Stocks" },
+    { symbol: "EXR", name: "Extra Space Storage", category: "Stocks" },
+    { symbol: "F", name: "Ford Motor", category: "Stocks" },
+    { symbol: "FAST", name: "Fastenal", category: "Stocks" },
+    { symbol: "FCX", name: "Freeport-McMoRan", category: "Stocks" },
+    { symbol: "FDX", name: "FedEx", category: "Stocks" },
+    { symbol: "FE", name: "FirstEnergy", category: "Stocks" },
+    { symbol: "FFIV", name: "F5", category: "Stocks" },
+    { symbol: "FIS", name: "Fidelity National Information Services", category: "Stocks" },
+    { symbol: "FITB", name: "Fifth Third Bancorp", category: "Stocks" },
+    { symbol: "FLS", name: "Flowserve", category: "Stocks" },
+    { symbol: "FMC", name: "FMC Corporation", category: "Stocks" },
+    { symbol: "FRT", name: "Federal Realty", category: "Stocks" },
+    { symbol: "FTI", name: "TechnipFMC", category: "Stocks" },
+    { symbol: "FTNT", name: "Fortinet", category: "Stocks" },
+    { symbol: "GD", name: "General Dynamics", category: "Stocks" },
+    { symbol: "GE", name: "General Electric", category: "Stocks" },
+    { symbol: "GILD", name: "Gilead Sciences", category: "Stocks" },
+    { symbol: "GIS", name: "General Mills", category: "Stocks" },
+    { symbol: "GL", name: "Globe Life", category: "Stocks" },
+    { symbol: "GLW", name: "Corning", category: "Stocks" },
+    { symbol: "GOOG", name: "Alphabet (Class C)", category: "Stocks" },
+    { symbol: "GOOGL", name: "Alphabet (Class A)", category: "Stocks" },
+    { symbol: "GPC", name: "Genuine Parts", category: "Stocks" },
+    { symbol: "GPN", name: "Global Payments", category: "Stocks" },
+    { symbol: "GRMN", name: "Garmin", category: "Stocks" },
+    { symbol: "GS", name: "Goldman Sachs", category: "Stocks" },
+    { symbol: "GWW", name: "W.W. Grainger", category: "Stocks" },
+    { symbol: "HAL", name: "Halliburton", category: "Stocks" },
+    { symbol: "HAS", name: "Hasbro", category: "Stocks" },
+    { symbol: "HBAN", name: "Huntington Bancshares", category: "Stocks" },
+    { symbol: "HD", name: "Home Depot", category: "Stocks" },
+    { symbol: "HES", name: "Hess Corporation", category: "Stocks" },
+    { symbol: "HIG", name: "Hartford Financial Services", category: "Stocks" },
+    { symbol: "HOLX", name: "Hologic", category: "Stocks" },
+    { symbol: "HON", name: "Honeywell", category: "Stocks" },
+    { symbol: "HPQ", name: "HP Inc.", category: "Stocks" },
+    { symbol: "HRB", name: "H&R Block", category: "Stocks" },
+    { symbol: "HRL", name: "Hormel Foods", category: "Stocks" },
+    { symbol: "HSIC", name: "Henry Schein", category: "Stocks" },
+    { symbol: "HST", name: "Host Hotels & Resorts", category: "Stocks" },
+    { symbol: "HSY", name: "Hershey", category: "Stocks" },
+    { symbol: "HUM", name: "Humana", category: "Stocks" },
+    { symbol: "IBM", name: "IBM", category: "Stocks" },
+    { symbol: "IDXX", name: "IDEXX Laboratories", category: "Stocks" },
+    { symbol: "IEX", name: "IDEX Corporation", category: "Stocks" },
+    { symbol: "IFF", name: "International Flavors & Fragrances", category: "Stocks" },
+    { symbol: "ILMN", name: "Illumina", category: "Stocks" },
+    { symbol: "INCY", name: "Incyte", category: "Stocks" },
+    { symbol: "INTC", name: "Intel", category: "Stocks" },
+    { symbol: "INTU", name: "Intuit", category: "Stocks" },
+    { symbol: "IP", name: "International Paper", category: "Stocks" },
+    { symbol: "IPG", name: "Interpublic Group", category: "Stocks" },
+    { symbol: "IRM", name: "Iron Mountain", category: "Stocks" },
+    { symbol: "ISRG", name: "Intuitive Surgical", category: "Stocks" },
+    { symbol: "IT", name: "Gartner", category: "Stocks" },
+    { symbol: "ITW", name: "Illinois Tool Works", category: "Stocks" },
+    { symbol: "IVZ", name: "Invesco", category: "Stocks" },
+    { symbol: "J", name: "Jacobs Solutions", category: "Stocks" },
+    { symbol: "JBHT", name: "J.B. Hunt", category: "Stocks" },
+    { symbol: "JCI", name: "Johnson Controls", category: "Stocks" },
+    { symbol: "JKHY", name: "Jack Henry & Associates", category: "Stocks" },
+    { symbol: "JNJ", name: "Johnson & Johnson", category: "Stocks" },
+    { symbol: "JNPR", name: "Juniper Networks", category: "Stocks" },
+    { symbol: "JPM", name: "JPMorgan Chase", category: "Stocks" },
+    { symbol: "K", name: "Kellogg", category: "Stocks" },
+    { symbol: "KEY", name: "KeyCorp", category: "Stocks" },
+    { symbol: "KIM", name: "Kimco Realty", category: "Stocks" },
+    { symbol: "KLAC", name: "KLA Corporation", category: "Stocks" },
+    { symbol: "KMB", name: "Kimberly-Clark", category: "Stocks" },
+    { symbol: "KMX", name: "CarMax", category: "Stocks" },
+    { symbol: "KO", name: "Coca-Cola", category: "Stocks" },
+    { symbol: "KR", name: "Kroger", category: "Stocks" },
+    { symbol: "KSS", name: "Kohl's", category: "Stocks" },
+    { symbol: "L", name: "Loews Corporation", category: "Stocks" },
+    { symbol: "LEG", name: "Leggett & Platt", category: "Stocks" },
+    { symbol: "LEN", name: "Lennar", category: "Stocks" },
+    { symbol: "LH", name: "Labcorp", category: "Stocks" },
+    { symbol: "LHX", name: "L3Harris Technologies", category: "Stocks" },
+    { symbol: "LIN", name: "Linde", category: "Stocks" },
+    { symbol: "LKQ", name: "LKQ Corporation", category: "Stocks" },
+    { symbol: "LLY", name: "Eli Lilly", category: "Stocks" },
+    { symbol: "LMT", name: "Lockheed Martin", category: "Stocks" },
+    { symbol: "LNC", name: "Lincoln National", category: "Stocks" },
+    { symbol: "LNT", name: "Alliant Energy", category: "Stocks" },
+    { symbol: "LOW", name: "Lowe's", category: "Stocks" },
+    { symbol: "LRCX", name: "Lam Research", category: "Stocks" },
+    { symbol: "LUV", name: "Southwest Airlines", category: "Stocks" },
+    { symbol: "LVS", name: "Las Vegas Sands", category: "Stocks" },
+    { symbol: "MAA", name: "Mid-America Apartment Communities", category: "Stocks" },
+    { symbol: "MAR", name: "Marriott International", category: "Stocks" },
+    { symbol: "MAS", name: "Masco Corporation", category: "Stocks" },
+    { symbol: "MCD", name: "McDonald's", category: "Stocks" },
+    { symbol: "MCHP", name: "Microchip Technology", category: "Stocks" },
+    { symbol: "MCK", name: "McKesson", category: "Stocks" },
+    { symbol: "MCO", name: "Moody's", category: "Stocks" },
+    { symbol: "MDLZ", name: "Mondelez International", category: "Stocks" },
+    { symbol: "MDT", name: "Medtronic", category: "Stocks" },
+    { symbol: "MET", name: "MetLife", category: "Stocks" },
+    { symbol: "MGM", name: "MGM Resorts International", category: "Stocks" },
+    { symbol: "MHK", name: "Mohawk Industries", category: "Stocks" },
+    { symbol: "MKC", name: "McCormick & Company", category: "Stocks" },
+    { symbol: "MKTX", name: "MarketAxess", category: "Stocks" },
+    { symbol: "MLM", name: "Martin Marietta Materials", category: "Stocks" },
+    { symbol: "MMC", name: "Marsh & McLennan", category: "Stocks" },
+    { symbol: "MMM", name: "3M", category: "Stocks" },
+    { symbol: "MNST", name: "Monster Beverage", category: "Stocks" },
+    { symbol: "MO", name: "Altria", category: "Stocks" },
+    { symbol: "MOS", name: "The Mosaic Company", category: "Stocks" },
+    { symbol: "MRK", name: "Merck & Co.", category: "Stocks" },
+    { symbol: "MS", name: "Morgan Stanley", category: "Stocks" },
+    { symbol: "MSFT", name: "Microsoft", category: "Stocks" },
+    { symbol: "MSI", name: "Motorola Solutions", category: "Stocks" },
+    { symbol: "MTB", name: "M&T Bank", category: "Stocks" },
+    { symbol: "MTD", name: "Mettler-Toledo", category: "Stocks" },
+    { symbol: "MU", name: "Micron Technology", category: "Stocks" },
+    { symbol: "NDAQ", name: "Nasdaq", category: "Stocks" },
+    { symbol: "NEE", name: "NextEra Energy", category: "Stocks" },
+    { symbol: "NEM", name: "Newmont", category: "Stocks" },
+    { symbol: "NFLX", name: "Netflix", category: "Stocks" },
+    { symbol: "NI", name: "NiSource", category: "Stocks" },
+    { symbol: "NKE", name: "Nike", category: "Stocks" },
+    { symbol: "NOC", name: "Northrop Grumman", category: "Stocks" },
+    { symbol: "NOV", name: "NOV Inc.", category: "Stocks" },
+    { symbol: "NRG", name: "NRG Energy", category: "Stocks" },
+    { symbol: "NSC", name: "Norfolk Southern", category: "Stocks" },
+    { symbol: "NTAP", name: "NetApp", category: "Stocks" },
+    { symbol: "NTRS", name: "Northern Trust", category: "Stocks" },
+    { symbol: "NUE", name: "Nucor", category: "Stocks" },
+    { symbol: "NVDA", name: "NVIDIA", category: "Stocks" },
+    { symbol: "NVR", name: "NVR, Inc.", category: "Stocks" },
+    { symbol: "NWL", name: "Newell Brands", category: "Stocks" },
+    { symbol: "O", name: "Realty Income", category: "Stocks" },
+    { symbol: "ODFL", name: "Old Dominion Freight Line", category: "Stocks" },
+    { symbol: "OKE", name: "ONEOK", category: "Stocks" },
+    { symbol: "OMC", name: "Omnicom Group", category: "Stocks" },
+    { symbol: "ORCL", name: "Oracle", category: "Stocks" },
+    { symbol: "ORLY", name: "O'Reilly Automotive", category: "Stocks" },
+    { symbol: "OXY", name: "Occidental Petroleum", category: "Stocks" },
+    { symbol: "PAYX", name: "Paychex", category: "Stocks" },
+    { symbol: "PCAR", name: "PACCAR", category: "Stocks" },
+    { symbol: "PEG", name: "Public Service Enterprise Group", category: "Stocks" },
+    { symbol: "PEP", name: "PepsiCo", category: "Stocks" },
+    { symbol: "PFE", name: "Pfizer", category: "Stocks" },
+    { symbol: "PFG", name: "Principal Financial Group", category: "Stocks" },
+    { symbol: "PG", name: "Procter & Gamble", category: "Stocks" },
+    { symbol: "PGR", name: "Progressive", category: "Stocks" },
+    { symbol: "PH", name: "Parker-Hannifin", category: "Stocks" },
+    { symbol: "PHM", name: "PulteGroup", category: "Stocks" },
+    { symbol: "PKG", name: "Packaging Corporation of America", category: "Stocks" },
+    { symbol: "PLD", name: "Prologis", category: "Stocks" },
+    { symbol: "PNC", name: "PNC Financial Services", category: "Stocks" },
+    { symbol: "PNR", name: "Pentair", category: "Stocks" },
+    { symbol: "PNW", name: "Pinnacle West Capital", category: "Stocks" },
+    { symbol: "PPG", name: "PPG Industries", category: "Stocks" },
+    { symbol: "PPL", name: "PPL Corporation", category: "Stocks" },
+    { symbol: "PRGO", name: "Perrigo", category: "Stocks" },
+    { symbol: "PRU", name: "Prudential Financial", category: "Stocks" },
+    { symbol: "PSA", name: "Public Storage", category: "Stocks" },
+    { symbol: "PVH", name: "PVH Corp.", category: "Stocks" },
+    { symbol: "PWR", name: "Quanta Services", category: "Stocks" },
+    { symbol: "QCOM", name: "Qualcomm", category: "Stocks" },
+    { symbol: "RCL", name: "Royal Caribbean Group", category: "Stocks" },
+    { symbol: "REG", name: "Regency Centers", category: "Stocks" },
+    { symbol: "REGN", name: "Regeneron Pharmaceuticals", category: "Stocks" },
+    { symbol: "RF", name: "Regions Financial", category: "Stocks" },
+    { symbol: "RHI", name: "Robert Half", category: "Stocks" },
+    { symbol: "RJF", name: "Raymond James", category: "Stocks" },
+    { symbol: "RL", name: "Ralph Lauren", category: "Stocks" },
+    { symbol: "RMD", name: "ResMed", category: "Stocks" },
+    { symbol: "ROK", name: "Rockwell Automation", category: "Stocks" },
+    { symbol: "ROL", name: "Rollins", category: "Stocks" },
+    { symbol: "ROP", name: "Roper Technologies", category: "Stocks" },
+    { symbol: "ROST", name: "Ross Stores", category: "Stocks" },
+    { symbol: "RSG", name: "Republic Services", category: "Stocks" },
+    { symbol: "RTX", name: "Raytheon Technologies", category: "Stocks" },
+    { symbol: "SBAC", name: "SBA Communications", category: "Stocks" },
+    { symbol: "SBUX", name: "Starbucks", category: "Stocks" },
+    { symbol: "SCHW", name: "Charles Schwab", category: "Stocks" },
+    { symbol: "SEE", name: "Sealed Air", category: "Stocks" },
+    { symbol: "SHW", name: "Sherwin-Williams", category: "Stocks" },
+    { symbol: "SJM", name: "J.M. Smucker", category: "Stocks" },
+    { symbol: "SLB", name: "Schlumberger", category: "Stocks" },
+    { symbol: "SLG", name: "SL Green Realty", category: "Stocks" },
+    { symbol: "SNA", name: "Snap-on", category: "Stocks" },
+    { symbol: "SNPS", name: "Synopsys", category: "Stocks" },
+    { symbol: "SO", name: "Southern Company", category: "Stocks" },
+    { symbol: "SPG", name: "Simon Property Group", category: "Stocks" },
+    { symbol: "SPGI", name: "S&P Global", category: "Stocks" },
+    { symbol: "SRE", name: "Sempra", category: "Stocks" },
+    { symbol: "STE", name: "STERIS", category: "Stocks" },
+    { symbol: "STT", name: "State Street", category: "Stocks" },
+    { symbol: "STX", name: "Seagate Technology", category: "Stocks" },
+    { symbol: "STZ", name: "Constellation Brands", category: "Stocks" },
+    { symbol: "SWK", name: "Stanley Black & Decker", category: "Stocks" },
+    { symbol: "SWKS", name: "Skyworks Solutions", category: "Stocks" },
+    { symbol: "SYK", name: "Stryker", category: "Stocks" },
+    { symbol: "SYY", name: "Sysco", category: "Stocks" },
+    { symbol: "T", name: "AT&T", category: "Stocks" },
+    { symbol: "TAP", name: "Molson Coors Beverage", category: "Stocks" },
+    { symbol: "TDY", name: "Teledyne Technologies", category: "Stocks" },
+    { symbol: "TFC", name: "Truist Financial", category: "Stocks" },
+    { symbol: "TFX", name: "Teleflex", category: "Stocks" },
+    { symbol: "TGT", name: "Target", category: "Stocks" },
+    { symbol: "TJX", name: "TJX Companies", category: "Stocks" },
+    { symbol: "TMO", name: "Thermo Fisher Scientific", category: "Stocks" },
+    { symbol: "TMUS", name: "T-Mobile US", category: "Stocks" },
+    { symbol: "TPR", name: "Tapestry", category: "Stocks" },
+    { symbol: "TROW", name: "T. Rowe Price", category: "Stocks" },
+    { symbol: "TRV", name: "Travelers", category: "Stocks" },
+    { symbol: "TSCO", name: "Tractor Supply", category: "Stocks" },
+    { symbol: "TSN", name: "Tyson Foods", category: "Stocks" },
+    { symbol: "TT", name: "Trane Technologies", category: "Stocks" },
+    { symbol: "TTWO", name: "Take-Two Interactive", category: "Stocks" },
+    { symbol: "TXN", name: "Texas Instruments", category: "Stocks" },
+    { symbol: "TXT", name: "Textron", category: "Stocks" },
+    { symbol: "TYL", name: "Tyler Technologies", category: "Stocks" },
+    { symbol: "UAA", name: "Under Armour (Class A)", category: "Stocks" },
+    { symbol: "UDR", name: "UDR, Inc.", category: "Stocks" },
+    { symbol: "UHS", name: "Universal Health Services", category: "Stocks" },
+    { symbol: "UNH", name: "UnitedHealth Group", category: "Stocks" },
+    { symbol: "UNM", name: "Unum Group", category: "Stocks" },
+    { symbol: "UNP", name: "Union Pacific", category: "Stocks" },
+    { symbol: "UPS", name: "United Parcel Service", category: "Stocks" },
+    { symbol: "URI", name: "United Rentals", category: "Stocks" },
+    { symbol: "USB", name: "U.S. Bancorp", category: "Stocks" },
+    { symbol: "VFC", name: "VF Corporation", category: "Stocks" },
+    { symbol: "VLO", name: "Valero Energy", category: "Stocks" },
+    { symbol: "VMC", name: "Vulcan Materials", category: "Stocks" },
+    { symbol: "VNO", name: "Vornado Realty Trust", category: "Stocks" },
+    { symbol: "VRSN", name: "VeriSign", category: "Stocks" },
+    { symbol: "VRTX", name: "Vertex Pharmaceuticals", category: "Stocks" },
+    { symbol: "VTR", name: "Ventas", category: "Stocks" },
+    { symbol: "VZ", name: "Verizon", category: "Stocks" },
+    { symbol: "WAB", name: "Wabtec", category: "Stocks" },
+    { symbol: "WAT", name: "Waters Corporation", category: "Stocks" },
+    { symbol: "WBA", name: "Walgreens Boots Alliance", category: "Stocks" },
+    { symbol: "WDC", name: "Western Digital", category: "Stocks" },
+    { symbol: "WEC", name: "WEC Energy Group", category: "Stocks" },
+    { symbol: "WELL", name: "Welltower", category: "Stocks" },
+    { symbol: "WFC", name: "Wells Fargo", category: "Stocks" },
+    { symbol: "WHR", name: "Whirlpool", category: "Stocks" },
+    { symbol: "WM", name: "Waste Management", category: "Stocks" },
+    { symbol: "WMB", name: "Williams Companies", category: "Stocks" },
+    { symbol: "WMT", name: "Walmart", category: "Stocks" },
+    { symbol: "WRB", name: "W. R. Berkley", category: "Stocks" },
+    { symbol: "WST", name: "West Pharmaceutical Services", category: "Stocks" },
+    { symbol: "WY", name: "Weyerhaeuser", category: "Stocks" },
+    { symbol: "WYNN", name: "Wynn Resorts", category: "Stocks" },
+    { symbol: "XEL", name: "Xcel Energy", category: "Stocks" },
+    { symbol: "XOM", name: "ExxonMobil", category: "Stocks" },
+    { symbol: "XRAY", name: "Dentsply Sirona", category: "Stocks" },
+    { symbol: "XRX", name: "Xerox", category: "Stocks" },
+    { symbol: "YUM", name: "Yum! Brands", category: "Stocks" },
+    { symbol: "ZBH", name: "Zimmer Biomet", category: "Stocks" },
+    { symbol: "ZBRA", name: "Zebra Technologies", category: "Stocks" },
+    { symbol: "ZION", name: "Zions Bancorporation", category: "Stocks" },
+];
+
+export default function StockNews() {
+  const theme = useTheme();
+  const [selectedStock, setSelectedStock] = useState(null);
+  const [selectedStockName, setSelectedStockName] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTab, setSelectedTab] = useState('All');
+  const [newsArticles, setNewsArticles] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const filteredStocks = stockList.filter(stock => {
+    const matchesCategory = selectedTab === 'All' || stock.category === selectedTab;
+    const matchesSearchQuery = stock.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                               stock.symbol.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearchQuery;
+  });
+
+  const handleSelectStock = (symbol, name) => {
+    if (symbol === selectedStock) {
+      setSelectedStock(null);
+      setSelectedStockName(null);
+    } else {
+      setSelectedStock(symbol);
+      setSelectedStockName(name);
+      // Clear previous news when selecting a new stock
+      setNewsArticles([]);
+    }
+  };
+
+  const fetchNewsForStock = async () => {
+    if (!selectedStockName) return;
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Encode the stock name to handle spaces and special characters
+      const encodedStockName = encodeURIComponent(selectedStockName);
+      
+      // Using the encoded stock name as the topic for news search
+      const response = await BackendClient.get(`/news/?topic=${encodedStockName}`);
+      
+      if (response.data && response.data.summaries) {
+        setNewsArticles(response.data.summaries);
+      } else {
+        setNewsArticles([]);
+      }
+    } catch (err) {
+      console.error('Error fetching news:', err);
+      setError('Failed to fetch news for the selected stock. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (selectedStockName) {
+      fetchNewsForStock();
+    }
+  };
+
+  // Function to format date
+  const formatDate = (dateString) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch (e) {
+      return dateString;
+    }
+  };
+
+  return (
+    <Box sx={{ flexGrow: 1, py: 4 }}>
+      <Container maxWidth="xl">
+        <Grid container spacing={3}>
+          {/* Stock Selection Section */}
+          <Grid item xs={12} md={3}>
+            <Card sx={{ p: 3, mt: 4, boxShadow: theme.shadows[4] }}>
+              <Typography variant="h5" gutterBottom>Stock News</Typography>
+
+              <TextField
+                fullWidth
+                variant="outlined"
+                placeholder="Search stocks..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ mb: 3 }}
+              />
+
+              <Tabs
+                value={selectedTab}
+                onChange={(e, newValue) => setSelectedTab(newValue)}
+                sx={{ my: 2 }}
+                variant="scrollable"
+              >
+                <Tab label="All" value="All" />
+                <Tab label="Stocks" value="Stocks" />
+              </Tabs>
+
+              <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
+                {searchQuery ? "Search Results" : "Popular Stocks"}
+              </Typography>
+
+              <List sx={{ maxHeight: 400, overflow: 'auto' }}>
+                {filteredStocks.map(stock => (
+                  <ListItem
+                    key={stock.symbol}
+                    onClick={() => handleSelectStock(stock.symbol, stock.name)}
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      borderBottom: `1px solid ${theme.palette.divider}`,
+                      py: 1,
+                      cursor: 'pointer',
+                      backgroundColor: selectedStock === stock.symbol ? theme.palette.action.selected : 'inherit',
+                      '&:hover': {
+                        backgroundColor: theme.palette.action.hover,
+                      },
+                    }}
+                  >
+                    <ListItemText
+                      primary={stock.name}
+                      secondary={stock.symbol}
+                      sx={{ color: theme.palette.text.primary }}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+
+              <Divider sx={{ my: 2 }} />
+
+              <Typography variant="subtitle1" gutterBottom>
+                Selected Stock
+              </Typography>
+              <Box sx={{ minHeight: 40 }}>
+                {selectedStock ? (
+                  <Chip
+                    label={selectedStockName}
+                    onDelete={() => {
+                      setSelectedStock(null);
+                      setSelectedStockName(null);
+                    }}
+                    color="primary"
+                    variant="outlined"
+                  />
+                ) : (
+                  <Typography color="text.secondary">No stock selected</Typography>
+                )}
+              </Box>
+
+              <Button
+                variant="contained"
+                fullWidth
+                sx={{ mt: 3 }}
+                onClick={handleSubmit}
+                disabled={!selectedStock || isLoading}
+              >
+                {isLoading ? <CircularProgress size={24} sx={{ mr: 1 }} color="inherit" /> : null}
+                Get Latest News
+              </Button>
+            </Card>
+          </Grid>
+
+          {/* News Articles Section */}
+          <Grid item xs={12} md={9}>
+            <Card sx={{ p: 3, mt: 4, boxShadow: theme.shadows[4] }}>
+              <Typography variant="h5" gutterBottom>
+                {selectedStockName ? `Latest News for ${selectedStockName}` : 'News Articles'}
+              </Typography>
+              
+              <Divider sx={{ mb: 3 }} />
+              
+              {isLoading && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', py: 5 }}>
+                  <CircularProgress />
+                </Box>
+              )}
+              
+              {error && !isLoading && (
+                <Alert severity="error" sx={{ my: 2 }}>{error}</Alert>
+              )}
+              
+              {!isLoading && !error && newsArticles.length === 0 && (
+                <Box sx={{ py: 5, textAlign: 'center' }}>
+                  <Typography color="text.secondary">
+                    {selectedStockName ? 'Select "Get Latest News" to fetch news for this stock' : 'Select a stock to view latest news'}
+                  </Typography>
+                </Box>
+              )}
+              
+              <Grid container spacing={3}>
+                {!isLoading && newsArticles.map((article, index) => (
+                  <Grid item xs={12} key={index}>
+                    <Card sx={{ 
+                      display: 'flex', 
+                      flexDirection: { xs: 'column', sm: 'row' }, 
+                      height: '100%',
+                      boxShadow: theme.shadows[2]
+                    }}>
+                      {article.image && (
+                        <Box sx={{ width: { xs: '100%', sm: 150 }, flexShrink: 0 }}>
+                          <CardMedia
+                            component="img"
+                            height="140"
+                            image={article.image}
+                            alt={article.title}
+                            sx={{ objectFit: 'cover', height: '100%' }}
+                          />
+                        </Box>
+                      )}
+                      <Box sx={{ 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        width: '100%'
+                      }}>
+                        <CardContent sx={{ 
+                          flex: '1 0 auto', 
+                          display: 'flex', 
+                          flexDirection: 'column',
+                          width: '100%',
+                          p: 2,
+                          pb: 0
+                        }}>
+                          <Typography variant="h6" component="div" gutterBottom sx={{ fontWeight: 500 }}>
+                            {article.title}
+                          </Typography>
+                          <Typography 
+                            variant="body2" 
+                            color="text.secondary" 
+                            sx={{ 
+                              mb: 2, 
+                              flex: 1,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              display: '-webkit-box',
+                              WebkitLineClamp: 3,
+                              WebkitBoxOrient: 'vertical'
+                            }}
+                          >
+                            {article.summary}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {article.source} • {formatDate(article.pubDate)}
+                          </Typography>
+                        </CardContent>
+                        <CardActions sx={{ 
+                          justifyContent: 'flex-end',
+                          p: 2, 
+                          pt: 1
+                        }}>
+                          <Button 
+                            variant="contained" 
+                            color="primary"
+                            size="small"
+                            component={Link}
+                            href={article.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            startIcon={<LaunchIcon />}
+                          >
+                            Read Full Article
+                          </Button>
+                        </CardActions>
+                      </Box>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Card>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
+  );
+}

@@ -79,7 +79,7 @@ Traditional investment tools struggle with dynamic markets, manual tracking, and
 ├── package.json # Frontend dependencies
 └── README.md # Project overview
 
-
+```
 
 ---
 

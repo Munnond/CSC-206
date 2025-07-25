@@ -64,18 +64,21 @@ Traditional investment tools struggle with dynamic markets, manual tracking, and
 
 ## 🧩 System Modules
 
-📦 CSC-206/
-├── backend/ # FastAPI server with ML models
-│ ├── models/ # Risk profiling, LSTM, FinBERT, etc.
-│ ├── routes/ # API endpoints
-│ └── utils/ # Preprocessing, optimization functions
-├── frontend/ # React.js application
-│ ├── components/ # Charts, forms, UI elements
-│ └── pages/ # Dashboard, login, reports
-├── data/ # Historical financial data & feature files
-├── requirements.txt # Backend dependencies
-├── package.json # Frontend dependencies
-└── README.md # Project overview
+CSC-206/
+├── backend/ # FastAPI server with AI/ML capabilities
+│ ├── models/ # Machine Learning models (Risk Profiling, LSTM, FinBERT, etc.)
+│ ├── routes/ # REST API endpoints for portfolio, sentiment, authentication, etc.
+│ └── utils/ # Utility functions for preprocessing, optimization, feature engineering
+│
+├── frontend/ # React.js frontend for user interface
+│ ├── components/ # Reusable UI components (charts, input forms, visualizations)
+│ └── pages/ # Main page views like Dashboard, Sign-In, Reports
+│
+├── data/ # Sample datasets, historical market data, CSVs for model input
+│
+├── requirements.txt # Python dependencies for the backend
+├── package.json # JavaScript dependencies for the frontend
+└── README.md # Project overview and setup guide
 
 ---
 

@@ -65,7 +65,7 @@ Traditional investment tools struggle with dynamic markets, manual tracking, and
 ## 🧩 System Modules
 
 ## 📁 Project Directory Structure
-
+ ```
 📦 CSC-206/
 ├── backend/ # FastAPI server with ML models
 │ ├── models/ # Risk profiling, LSTM, FinBERT, etc.
